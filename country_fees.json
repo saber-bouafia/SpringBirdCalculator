@@ -1,4 +1,21 @@
 [
+    {
+    "ID": 100,
+    "Country Code": "CV",
+    "Country": "Algeria",
+    "Base Fee": 169,
+    "Second Class Onwards Fee": 62,
+    "Third Class Onwards Fee": 62,
+    "Fourth Class Onwards Fee": 62,
+    "Second Part Fee": "",
+    "Subsequent Base Fee": 169,
+    "Subsequent Second Class Onwards Fee": 62,
+    "Subsequent Third Class Onwards Fee": 62,
+    "Subsequent Fourth Class Onwards Fee": 62,
+    "Complementary Fee": "",
+    "Currency": "CHF"
+  },
+  
   {
     "ID": 180,
     "Country Code": "CV",

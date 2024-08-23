@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trademark Cost Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .hidden {
+        display: none;
+      }
+      #totalCost,
+      #worldTotalCost {
+        font-weight: bold;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Trademark Cost Calculator</h1>
+
+    <div>
+      <h3>Select Region:</h3>
+      <input type="radio" name="region" value="UK" /> UK
+      <input type="radio" name="region" value="EU" /> EU
+      <input type="radio" name="region" value="other" /> Other Countries
+    </div>
+
+    <div>
+      <h3>Number of Classes:</h3>
+      <select id="classesSelect">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+      </select>
+    </div>
+
+    <div id="questions">
+      <h3>Additional Questions:</h3>
+      <p>Do you already have an international application?</p>
+      <input type="radio" name="q1" value="yes" /> Yes
+      <input type="radio" name="q1" value="no" /> No
+
+      <p>Will you also want to protect the mark in other countries soon?</p>
+      <input type="radio" name="q2" value="yes" /> Yes
+      <input type="radio" name="q2" value="no" /> No
+
+      <p>Do you have a UK Registration already?</p>
+      <input type="radio" name="q3" value="yes" /> Yes
+      <input type="radio" name="q3" value="no" /> No
+
+      <p>Is the mark you want to protect in colour?</p>
+      <input type="radio" name="q4" value="yes" /> Yes
+      <input type="radio" name="q4" value="no" /> No
+
+      <p>Is it based on a UK mark?</p>
+      <input type="radio" name="q5" value="yes" /> Yes
+      <input type="radio" name="q5" value="no" /> No
+
+      <p>Would you like to make use of the international system?</p>
+      <input type="radio" name="q6" value="yes" /> Yes
+      <input type="radio" name="q6" value="no" /> No
+    </div>
+
+    <!--     <select id="countrySelect">
+      <option value="">Select a country</option>
+      <option value="Cape Verde">Cape Verde</option>
+      <option value="Mauritius">Mauritius</option>
+      <option value="Belize">Belize</option>
+    </select> -->
+
+    <label for="countrySelect">Select a country:</label>
+    <select id="countrySelect">
+      <option value="">Select a country</option>
+    </select>
+
+    <div id="totalCost">Total Cost: £0</div>
+    <div id="worldTotalCost" class="hidden">World Total Cost: £0</div>
+
+    <script>
+      //fetch the countries
+
+      // Fetch the JSON data
+      fetch(
+        "https://api.jsonsilo.com/public/3cbc0257-3e77-4b5d-b286-e799bb4603d0"
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          // Get the select element
+          const countrySelect = document.getElementById("countrySelect");
+
+          // Populate the select options with the countries
+          data.forEach((item) => {
+            const option = document.createElement("option");
+            option.value = item.Country;
+            option.text = item.Country;
+            countrySelect.add(option);
+          });
+        })
+        .catch((error) => console.error("Error fetching country data:", error));
+
+      //rate change
+      let EuroToGBP = 0.8823; // 0.86 * 1.0295; //0.8823
+      let CHFToGBP = 0.932; //0.9 * 1.0295;
+
+      // Fees (in Euro)
+      const feesEuro = {
+        euipoEuro: { baseEuro: 850, secondEuro: 50, additionalEuro: 150 },
+        wipoEuro: {
+          AppEUEuro: {
+            baseEuro: 850,
+            colourEuro: 950, //
+            secondEuro: 50,
+            additionalEuro: 150,
+          },
+          ourEuro: { base: 375, additional: 50 },
+          subsequentDesignationEuro: 0.0,
+        },
+      };
+
+      // Fees (in CHF)
+      const feesCHF = {
+        wipoCHF: {
+          newAppEUCHF: { base: 789, second: 48, additional: 144 },
+          newAppCHF: { base: 635, colour: 903 },
+        },
+        subsequentDesignationCHF: 300,
+      };
+
+      // Fees (in GBP)
+      const fees = {
+        ukipo: { base: 170, additional: 50 },
+        ukOur: { base: 420, additional: 100 },
+        euipo: {
+          base: feesEuro.euipoEuro.baseEuro * EuroToGBP,
+          second: feesEuro.euipoEuro.secondEuro,
+          additional: feesEuro.euipoEuro.additionalEuro,
+        },
+        euOur: { base: 595, second: 50, additional: 95 },
+        wipo: {
+          AppEU: {
+            base: EuroToGBP * feesEuro.wipoEuro.AppEUEuro.baseEuro, // £714
+            colour: EuroToGBP * feesEuro.wipoEuro.AppEUEuro.colourEuro, // £798
+            second: EuroToGBP * feesEuro.wipoEuro.AppEUEuro.secondEuro, // €50
+            additional: EuroToGBP * feesEuro.wipoEuro.AppEUEuro.additionalEuro, // €150
+          },
+          our: { base: 375, second: 50, additional: 150 },
+          newApp: {
+            base: CHFToGBP * feesCHF.wipoCHF.newAppCHF.base,
+            colour: CHFToGBP * feesCHF.wipoCHF.newAppCHF.colour,
+          },
+          newAppEU: {
+            base: CHFToGBP * feesCHF.wipoCHF.newAppEUCHF.base,
+            second: CHFToGBP * feesCHF.wipoCHF.newAppEUCHF.second,
+            additional: CHFToGBP * feesCHF.wipoCHF.newAppEUCHF.additional,
+          }, //789CHF
+          subsequentDesignation: feesCHF.subsequentDesignationCHF * CHFToGBP, // £264 (300CHF)
+          ourSequentDesignation: { base: 275, additional: 150 },
+        },
+        overseas: { base: 450, additional: 50 },
+        throughtheUKoffice: { base: 40 },
+        OurfeesEUdesignation: { base: 150 },
+      };
+
+      // Main calculation function
+      function calculateCost() {
+        const region = document.querySelector(
+          'input[name="region"]:checked'
+        )?.value;
+        let classes = parseInt(document.getElementById("classesSelect").value);
+        const q1 = document.querySelector('input[name="q1"]:checked')?.value;
+        const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+        const q3 = document.querySelector('input[name="q3"]:checked')?.value;
+        const q4 = document.querySelector('input[name="q4"]:checked')?.value;
+        const q5 = document.querySelector('input[name="q5"]:checked')?.value;
+        const q6 = document.querySelector('input[name="q6"]:checked')?.value;
+
+        let totalCost = 0;
+
+        if (region === "UK") {
+          //if UK selected
+          totalCost = fees.ukipo.base + fees.ukOur.base; // £170 + £420
+          if (classes > 1) {
+            totalCost +=
+              (classes - 1) * (fees.ukipo.additional + fees.ukOur.additional);
+          }
+        } else if (region === "EU") {
+          //if EU selected
+          if (q1 === "no" && q2 === "no") {
+            //Q1. Do you already have an international application? NO
+            //Q2. Will you also want to protect the mark in other countries soon? NO
+            totalCost = fees.wipo.AppEU.base + fees.euOur.base; // €850 + £595 = £1345
+            q4 === "yes"; //Is the mark you want to protect in colour?
+            if (classes > 1) {
+              totalCost += fees.wipo.AppEU.second + fees.euOur.second; // +£42(€50)+ £50
+              if (classes > 2) {
+                console.log(totalCost);
+                totalCost += fees.wipo.AppEU.additional + fees.euOur.additional; // ... + €50+ £50 +€150+£95
+                console.log(
+                  totalCost,
+                  fees.wipo.AppEU.additional,
+                  fees.euOur.additional
+                );
+                if (classes > 3) {
+                  totalCost +=
+                    (classes - 3) *
+                    (fees.euOur.additional + fees.wipo.AppEU.additional); // +£126(€150) +£95
+                }
+              }
+            }
+          } else if (q1 === "no" && q2 === "yes" && q3 === "yes") {
+            //Q1. Do you already have an international application? NO
+            //Q2. Will you also want to protect the mark in other countries soon? YES
+            //Q3. Do you have a UK Registration already? YES
+            totalCost =
+              q4 === "yes" //Is the mark you want to protect in colour?
+                ? fees.wipo.newApp.colour +
+                  fees.wipo.newAppEU.base +
+                  fees.wipo.our.base +
+                  fees.throughtheUKoffice.base +
+                  fees.OurfeesEUdesignation.base
+                : //YES // 903CHF + 789CHF + £375 ~ £2181
+                  fees.wipo.newApp.base +
+                  fees.wipo.newAppEU.base +
+                  fees.wipo.our.base +
+                  fees.throughtheUKoffice.base +
+                  fees.OurfeesEUdesignation.base;
+            //NO //  653CHF + + 789CHF + £375 + £40 + £150  ~  £1925;
+
+            if (classes > 1) {
+              totalCost += fees.wipo.newAppEU.second + fees.wipo.our.second; // 48CHF+£50
+              if (classes > 2) {
+                console.log(totalCost);
+                totalCost +=
+                  fees.wipo.newAppEU.additional + fees.wipo.our.second; // +£50
+                if (classes > 3) {
+                  totalCost +=
+                    (classes - 3) *
+                    (fees.wipo.newAppEU.additional + fees.wipo.our.second); // ... 144CHF+ £50
+                }
+              }
+            }
+          } else if (q1 === "no" && q2 === "yes" && q3 === "no") {
+            //Q1. Do you already have an international application? NO
+            //Q2. Will you also want to protect the mark in other countries soon? YES
+            //Q3. Do you have a UK Registration already? NO
+            totalCost =
+              q4 === "yes" //Is the mark you want to protect in colour?
+                ? fees.wipo.newApp.colour +
+                  fees.wipo.newAppEU.base +
+                  fees.wipo.our.base +
+                  fees.throughtheUKoffice.base +
+                  fees.OurfeesEUdesignation.base +
+                  fees.ukipo.base +
+                  fees.ukOur.base //YES //  £170 + £420 + £375 +£695(789CHF)+ £558(635CHF) + £590 ~ £2515
+                : fees.wipo.newApp.base +
+                  fees.wipo.newAppEU.base +
+                  fees.wipo.our.base +
+                  fees.throughtheUKoffice.base +
+                  fees.OurfeesEUdesignation.base +
+                  fees.ukipo.base +
+                  fees.ukOur.base; //NO // £170 + £420 + £375 +£695(789CHF)+ £795(903CHF)+£590 ~ £2454
+            if (classes > 1) {
+              totalCost +=
+                fees.wipo.newAppEU.second +
+                fees.wipo.our.second +
+                (fees.ukipo.additional + fees.ukOur.additional); // 48CHF+£50+ £95 + £100
+              if (classes > 2) {
+                console.log(totalCost);
+                totalCost +=
+                  fees.wipo.newAppEU.additional +
+                  fees.wipo.our.second +
+                  (fees.ukipo.additional + fees.ukOur.additional); // 144CHF +£50 +£95 + £100
+                if (classes > 3) {
+                  totalCost +=
+                    (classes - 3) *
+                      (fees.wipo.newAppEU.additional + fees.wipo.our.second) +
+                    (fees.ukipo.additional + fees.ukOur.additional); // ... 144CHF+ £50
+                }
+              }
+            }
+          } else if (q1 === "yes") {
+            //Q1. Do you already have an international application? Yes
+
+            totalCost =
+              q4 === "yes" //Is the mark you want to protect in colour?
+                ? fees.wipo.subsequentDesignation +
+                  fees.wipo.newAppEU.base +
+                  fees.wipo.ourSequentDesignation.base //YES // (300CHF) +(789CHF)+ £275  ~ £1315
+                : fees.wipo.subsequentDesignation +
+                  fees.wipo.newAppEU.base +
+                  fees.wipo.ourSequentDesignation.base; //YES //(300CHF) +(789CHF)+ £275  ~ £1284
+            if (classes > 1) {
+              totalCost += fees.wipo.newAppEU.second + fees.wipo.our.second; // ...  + £37(48CHF) +£50
+              if (classes > 2) {
+                console.log(totalCost);
+                totalCost +=
+                  (classes - 2) *
+                  (fees.wipo.newAppEU.additional + fees.wipo.our.second); // ... 144CHF + £50
+                if (classes > 3) {
+                  totalCost +=
+                    (classes - 3) *
+                    (fees.wipo.newAppEU.additional + fees.wipo.our.second); // ... 144CHF+ £50
+                }
+              }
+            }
+          }
+        }
+
+        document.getElementById(
+          "totalCost"
+        ).textContent = `Total Cost: £${Math.round(totalCost.toFixed(2))}`;
+
+        // World countries calculation
+        if (region === "other") {
+          document.getElementById("worldTotalCost").classList.remove("hidden");
+          document.getElementById("totalCost").classList.add("hidden");
+        } else {
+          document.getElementById("worldTotalCost").classList.add("hidden");
+          document.getElementById("totalCost").classList.remove("hidden");
+        }
+      }
+
+      // Event listeners
+      document.querySelectorAll('input[type="radio"], select').forEach((el) => {
+        el.addEventListener("change", calculateCost);
+      });
+
+      // Load the calculator on page load
+      calculateCost();
+
+      /*       async function fetchCountryData(country) {
+             try {
+               const response = await fetch("country_fees.json");
+               const data = await response.json();
+               countryData = data.find((item) => item.Country === country);
+               return countryData;
+             } catch (error) {
+               console.error("Error fetching country data:", error);
+             }
+           }
+      */
+
+      async function fetchCountryData(country) {
+        try {
+          const remoteUrl =
+            "https://cdn.jsdelivr.net/gh/BouafiaSaber/SpringBirdCalculator@main/country_fees.json";
+
+          const response = await fetch(remoteUrl);
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          const countryData = data.find((item) => item.Country === country);
+
+          if (!countryData) {
+            throw new Error(`Country '${country}' not found in the data`);
+          }
+
+          return countryData;
+        } catch (error) {
+          console.error("Error fetching country data:", error);
+          throw error;
+        }
+      }
+      /* ///*/
+      //Logic for "Others"
+      async function calculateOtherCost() {
+        console.log("calculateOtherCost funtion called");
+        let selectCountry = document.getElementById("countrySelect").value;
+        console.log(selectCountry);
+        let seletctedCountryData = await fetchCountryData(selectCountry);
+
+        let countryBaseFee = seletctedCountryData["Base Fee"];
+        let countrySecondClass =
+          seletctedCountryData["Second Class Onwards Fee"];
+        let countryThirdClass = seletctedCountryData["Third Class Onwards Fee"];
+        let countryFourthClass =
+          seletctedCountryData["Fourth Class Onwards Fee"];
+
+        let classes = parseInt(document.getElementById("classesSelect").value);
+        const q1 = document.querySelector('input[name="q1"]:checked')?.value;
+        const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+        const q3 = document.querySelector('input[name="q3"]:checked')?.value;
+        const q4 = document.querySelector('input[name="q4"]:checked')?.value;
+        const q5 = document.querySelector('input[name="q5"]:checked')?.value;
+        const q6 = document.querySelector('input[name="q6"]:checked')?.value;
+        let OthersTotalCost = 0;
+
+        if (q6 === "yes" && q3 === "yes") {
+          //Q6. Would you like to make use of the international system?? YES
+          //Q3. Do you have a UK Registration already?? YES
+          OthersTotalCost =
+            q4 === "yes" //Is the mark you want to protect in colour?
+              ? countryBaseFee +
+                fees.wipo.newApp.colour +
+                fees.wipo.newApp.colour +
+                fees.throughtheUKoffice.base +
+                fees.wipo.our.base
+              : //YES // (903CHF) + £40 + £375 + £150  +(value from sheet)
+                countryBaseFee +
+                fees.wipo.newApp.base +
+                fees.wipo.newApp.colour +
+                fees.throughtheUKoffice.base +
+                fees.wipo.our.base; //NO //(635CHF) + £40 + £375 + £150  +(value from sheet)
+          if (classes > 1) {
+            OthersTotalCost += fees.wipo.our.second + countrySecondClass; // ...  + £50 +second from the Sheet
+            if (classes > 2) {
+              OthersTotalCost +=
+                (classes - 2) * (fees.wipo.our.additional + countryThirdClass);
+              // ... + £50 +second from the Sheet
+              if (classes > 3) {
+                OthersTotalCost +=
+                  (classes - 2) *
+                  (fees.wipo.our.additional + countryFourthClass);
+                // ... 144CHF+ £50
+              }
+            }
+          }
+        }
+
+        document.getElementById(
+          "worldTotalCost"
+        ).textContent = `Total Cost: £ ${OthersTotalCost}`;
+      }
+
+      function addChangeEventListener(elementId) {
+        document
+          .getElementById(elementId)
+          .addEventListener("change", calculateOtherCost);
+      }
+
+      // Add event listener for countrySelect dropdown
+      addChangeEventListener("countrySelect");
+
+      // Add event listener for classesSelect dropdown
+      addChangeEventListener("classesSelect");
+
+      // Add event listeners for all radio buttons within the set of questions
+      const radioButtons = document.querySelectorAll('input[type="radio"]');
+      radioButtons.forEach(function (radio) {
+        radio.addEventListener("change", calculateOtherCost);
+      });
+    </script>
+  </body>
+</html>

@@ -2,65 +2,6 @@
       let EuroToGBP = 0.8823; // 0.86 * 1.0295; //0.8823
       let CHFToGBP = 0.932; //0.9 * 1.0295;
 
-      // Fees (in Euro)
-      const feesEuro = {
-        euipoEuro: { baseEuro: 850, secondEuro: 50, additionalEuro: 150 },
-        wipoEuro: {
-          AppEUEuro: {
-            baseEuro: 850,
-            colourEuro: 950, //
-            secondEuro: 50,
-            additionalEuro: 150,
-          },
-          ourEuro: { base: 475, additional: 50 },
-          subsequentDesignationEuro: 0.0,
-        },
-      };
-
-      // Fees (in CHF)
-      const feesCHF = {
-        wipoCHF: {
-          newAppEUCHF: { base: 789, second: 48, additional: 144 },
-          newAppCHF: { base: 635, colour: 903 },
-        },
-        subsequentDesignationCHF: 300,
-      };
-
-      // Fees (in GBP)
-      //Q4.
-      const fees = {
-        ukipo: { base: 170, additional: 50 },
-        ukOur: { base: 520, additional: 100 },
-        euipo: {
-          base: feesEuro.euipoEuro.baseEuro * EuroToGBP,
-          second: feesEuro.euipoEuro.secondEuro,
-          additional: feesEuro.euipoEuro.additionalEuro,
-        },
-        euOur: { base: 695, second: 50, additional: 95 },
-        wipo: {
-          AppEU: {
-            base: EuroToGBP * feesEuro.wipoEuro.AppEUEuro.baseEuro, // £714
-            colour: EuroToGBP * feesEuro.wipoEuro.AppEUEuro.colourEuro, // £798
-            second: EuroToGBP * feesEuro.wipoEuro.AppEUEuro.secondEuro, // €50
-            additional: EuroToGBP * feesEuro.wipoEuro.AppEUEuro.additionalEuro, // €150
-          },
-          our: { base: 475, second: 50, additional: 150 },
-          newApp: {
-            base: CHFToGBP * feesCHF.wipoCHF.newAppCHF.base,
-            colour: CHFToGBP * feesCHF.wipoCHF.newAppCHF.colour,
-          },
-          newAppEU: {
-            base: CHFToGBP * feesCHF.wipoCHF.newAppEUCHF.base,
-            second: CHFToGBP * feesCHF.wipoCHF.newAppEUCHF.second,
-            additional: CHFToGBP * feesCHF.wipoCHF.newAppEUCHF.additional,
-          }, //789CHF
-          subsequentDesignation: feesCHF.subsequentDesignationCHF * CHFToGBP, // £264 (300CHF)
-          ourSequentDesignation: { base: 350, additional: 150 },
-        },
-        overseas: { base: 450, additional: 50 },
-        throughtheUKoffice: { base: 40 },
-        OurfeesEUdesignation: { base: 150 },
-      };
 
       // Main calculation function
       function calculateCost() {
